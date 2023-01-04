@@ -1,4 +1,4 @@
-import { API_SUCCESS, API_VLS } from '../constants';
+import { API_SUCCESS, API_VLS, API_VL_BANNER,API_EVENT_LIST } from '../constants';
 import { API_BEGIN } from '../constants';
 import { API_FAIL } from '../constants';
 import { API_LOGOUT } from '../constants';
@@ -12,7 +12,8 @@ result:false,
 userDetails:[],
 userLoading:false,
 userMessage:'',
-userResult:false
+userResult:false,
+
 };
 const HomeReducer = (state = homeState, action) => {
     switch(action.type) {
@@ -33,6 +34,22 @@ const HomeReducer = (state = homeState, action) => {
                 userLoading : false,                
                 userMessage:action.message ,
                 userResult:action.result               
+              };
+           }
+           case API_VL_BANNER:{
+           
+            return {
+                ...state, 
+               bannerMessage:action.message ,
+                bannerResult:action.result               
+              };
+           }
+           case API_EVENT_LIST:{
+    
+            return {
+                ...state, 
+               eventMessage:action.message ,
+               eventListResult:action.eventListResult               
               };
            }
            case API_LOGOUT:{

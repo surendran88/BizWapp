@@ -31,6 +31,7 @@ export default {
   lightgray:'#989898',
   deepGray:'#2B2B2B',
   takeOrange:'#E44F22',
-  
+  red:'#de0000',
+  lightYellow:'#F7CA18'
 
 };

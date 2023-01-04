@@ -19,7 +19,8 @@ import Orientation from 'react-native-orientation';
 const backgroundIg = require('../../../assets/home-bg.png');
 const menuIg = require('../../../assets/menu-bg.png');
 const headerImage = require('../../../assets/top-bar.png');
-const beginerImage = require('../../../assets/block-beginer.png');
+const ndemoClick = require('../../../assets/ndewo.png');
+const whatnew = require('../../../assets/whatnew.png');
 const expertImage = require('../../../assets/block-expert.png');
 const igboImage = require('../../../assets/block-igbo.png');
 const intermediateImage = require('../../../assets/block-intermediate.png');
@@ -63,7 +64,9 @@ const imageArray=[{'image':lesson1Image},{'image':lesson2Image},{'image':lesson3
        isLoading:false,
        userDtls:{},
        subData:[],
-       course:[]
+       course:[],
+       bannerList:[],
+       eventList:[]
        
      }
     }
@@ -91,6 +94,8 @@ UNSAFE_componentWillMount(){
   let {actions} = this.props;
  
     actions.getHomeData(params);
+    actions.getBanner(params);
+    actions.getEventList(params);
 }
 // getUserData=async()=>{
 //   const value = await AsyncStorage.getItem('userId')
@@ -112,26 +117,21 @@ navigateFromSideMenu=(page)=>{
   this.setState({isSideBarVisible:false})
   this.props.navigation.navigate(page)
 }
-callLogoutService=async()=>{
-  Alert.alert(
-    'Biawazo',
-    'Do you want to Logout?',
-    [
-      {text: 'OK', onPress: () => this.Logout()},
-     
-      {text: 'CANCEL', onPress: () => console.log('OK Pressed')},
-    ],
-    {cancelable: false},
-  );
-  
-  
-  
+   callLogoutService = async () => {
+     Alert.alert(
+       'Biawazo',
+       'Do you want to Logout?',
+       [
+         { text: 'OK', onPress: () => this.Logout() },
+         { text: 'CANCEL', onPress: () => console.log('OK Pressed') },
+       ],
+       { cancelable: false },
+     );
 }
 getUserData = async() =>{
     
   this.setState({isLoading:true})
   const value = await AsyncStorage.getItem('userId')
-  
   let params = {'user_id':value};
   
   axios.post(Constant.BASEURL + Constant.USER_DETAILS, params,Utils.postHeader()).
@@ -182,7 +182,6 @@ Logout = async() =>{
     
   this.setState({isLoading:true})
   const value = await AsyncStorage.getItem('userId')
-  
   let params = {'user_id':value};
   
   axios.post(Constant.BASEURL + Constant.LOGOUT, params,Utils.postHeader()).
@@ -249,8 +248,12 @@ userDetails=()=>{
    this.props.navigation.navigate('Profile',{'userDetails':this.state.userDtls,'course':this.state.course})
 }
 UNSAFE_componentWillReceiveProps(){
-  let {data,loading,message,result,userDetails,userLoading,userMessage,userResult}=this.props
-  console.log(data,loading,message,result,userDetails,userLoading,userMessage,userResult)
+  let {data,result,userDetails,userResult,bannerResult,eventListResult}=this.props
+ 
+console.log(bannerResult);
+  if(bannerResult!==undefined){ 
+  this.setState({bannerList:Object.keys(bannerResult).filter(s=>!s.indexOf("content"))});
+  }
   this.getUserData()
   if(userResult==true){
     this.setState({userDtls:userDetails.user_data})
@@ -259,171 +262,198 @@ if (result==true){
   this.setState({res:data})
  
 }
-
+if(eventListResult!==undefined){ 
+  this.setState({eventList:eventListResult});
+  }
 
 }
   render() {
-    let {data,igbo_module_list,loading,message,result,userDetails,userLoading,userMessage,userResult}=this.props
+    let {data,igbo_module_list,loading,message,result,userDetails,userLoading,userMessage,userResult,bannerResult,eventListResult}=this.props
     
     
     return (
       <View style={GlobalStyle.container}>
-        
-        <View style={Styles.subContainer}>  
-       
-        <Modal style={{marginLeft:responsiveWidth(-0.05),width:responsiveWidth(100),flexDirection:'row'}}  isVisible={this.state.isSideBarVisible} coverScreen={true} animationIn='slideInLeft' hideModalContentWhileAnimating={true} useNativeDriver={true} animationOutTiming={1000} animationOut={'slideOutLeft'}>
-        
-                      <View style={Styles.sideBarView}>                        
-                        {/* <TouchableOpacity onPress={()=>this.clickOnCategories()}><Image source={speakImage}/></TouchableOpacity> */}
-                        <ImageBackground source={menuIg} style={{width:'100%',height:'100%',alignItems:'center',marginTop:Platform.OS==='ios'?responsiveHeight(4.2):null}} imageStyle={{resizeMode:'stretch'}}>
-                          <ScrollView contentContainerStyle={{justifyContent:'flex-start',alignItems:'center',height:responsiveHeight(120)}} contentInset={{top:0,bottom:responsiveHeight(10)}}>
-                          <TouchableOpacity onPress={()=>this.userDetails()}><ImageBackground style={{width:responsiveHeight(15),height:responsiveHeight(15),borderRadius:responsiveHeight(15)/2,marginTop:responsiveHeight(5),resizeMode:'cover'}} source={profileImageView}><Image source={{uri:this.state.userDtls.user_image}} style={{width:responsiveHeight(16),height:responsiveHeight(16),borderRadius:responsiveHeight(16)/2}}/></ImageBackground></TouchableOpacity>
-                          <Text style={[Styles.learningtextView,{marginTop:responsiveHeight(1)}]}>{this.state.userDtls.first_name} {this.state.userDtls.last_name}</Text>
-                          <TouchableOpacity onPress={()=>this.navigateFromSideMenu('HomePage')} style={{flexDirection:'row',width:responsiveWidth(70),marginTop:responsiveHeight(3)}}>
-                            <Image source={menuVirtualLanguageImage} style={{marginLeft:responsiveWidth(10),marginTop:responsiveHeight(1)}}/>
-                            <Text style={[Styles.learningtextView,{marginLeft:responsiveWidth(3),marginTop:responsiveHeight(1),fontSize:responsiveFontSize(2.2)}]}>Virtual Language {'\n'} Learning</Text>
-                            </TouchableOpacity>
-                            {/* <TouchableOpacity onPress={()=>Linking.openURL('https://www.biawazo.com/GLL')} style={{flexDirection:'row',width:responsiveWidth(70),marginTop:responsiveHeight(2)}}>
+        <View style={Styles.subContainer}>
+          <Modal style={{ marginLeft: responsiveWidth(-0.05), width: responsiveWidth(100), flexDirection: 'row' }} isVisible={this.state.isSideBarVisible} coverScreen={true} animationIn='slideInLeft' hideModalContentWhileAnimating={true} useNativeDriver={true} animationOutTiming={1000} animationOut={'slideOutLeft'}>
+            <View style={Styles.sideBarView}>
+              {/* <TouchableOpacity onPress={()=>this.clickOnCategories()}><Image source={speakImage}/></TouchableOpacity> */}
+              <ImageBackground source={menuIg} style={{ width: '100%', height: '100%', alignItems: 'center', marginTop: Platform.OS === 'ios' ? responsiveHeight(4.2) : null }} imageStyle={{ resizeMode: 'stretch' }}>
+                <ScrollView contentContainerStyle={{ justifyContent: 'flex-start', alignItems: 'center', height: responsiveHeight(120) }} contentInset={{ top: 0, bottom: responsiveHeight(10) }}>
+                  <TouchableOpacity onPress={() => this.userDetails()}><ImageBackground style={{ width: responsiveHeight(15), height: responsiveHeight(15), borderRadius: responsiveHeight(15) / 2, marginTop: responsiveHeight(5), resizeMode: 'cover' }} source={profileImageView}><Image source={{ uri: this.state.userDtls.user_image }} style={{ width: responsiveHeight(16), height: responsiveHeight(16), borderRadius: responsiveHeight(16) / 2 }} /></ImageBackground></TouchableOpacity>
+                  <Text style={[Styles.learningtextView, { marginTop: responsiveHeight(1) }]}>{this.state.userDtls.first_name} {this.state.userDtls.last_name}</Text>
+                  <TouchableOpacity onPress={() => this.navigateFromSideMenu('HomePage')} style={{ flexDirection: 'row', width: responsiveWidth(70), marginTop: responsiveHeight(3) }}>
+                    <Image source={menuVirtualLanguageImage} style={{ marginLeft: responsiveWidth(10), marginTop: responsiveHeight(1) }} />
+                    <Text style={[Styles.learningtextView, { marginLeft: responsiveWidth(3), marginTop: responsiveHeight(1), fontSize: responsiveFontSize(2.2) }]}>Virtual Language {'\n'} Learning</Text>
+                  </TouchableOpacity>
+                  {/* <TouchableOpacity onPress={()=>Linking.openURL('https://www.biawazo.com/GLL')} style={{flexDirection:'row',width:responsiveWidth(70),marginTop:responsiveHeight(2)}}>
                             <Image source={menuGlobalLanguageImage} style={{marginLeft:responsiveWidth(10),marginTop:responsiveHeight(1)}}/>
                             <Text style={[Styles.learningtextView,{marginLeft:responsiveWidth(3),marginTop:responsiveHeight(1),fontSize:responsiveFontSize(2.2)}]}>Global Language {'\n'} Learning</Text>
                             </TouchableOpacity> */}
-                            <TouchableOpacity onPress={()=>this.navigateFromSideMenu('Subscription')} style={{flexDirection:'row',width:responsiveWidth(70),marginTop:responsiveHeight(1)}}>
-                            <Image source={menuSubscriptionImage} style={{marginLeft:responsiveWidth(10),marginTop:responsiveHeight(1)}}/>
-                            <Text style={[Styles.learningtextView,{marginLeft:responsiveWidth(3),marginTop:responsiveHeight(1),fontSize:responsiveFontSize(2.2)}]}>Subscribe</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={()=>this.navigateFromSideMenu('AboutUs')} style={{flexDirection:'row',width:responsiveWidth(70),marginTop:responsiveHeight(1)}}>
-                            <Image source={menuAboutUsImage} style={{marginLeft:responsiveWidth(10),marginTop:responsiveHeight(1)}}/>
-                            <Text style={[Styles.learningtextView,{marginLeft:responsiveWidth(3),marginTop:responsiveHeight(1),fontSize:responsiveFontSize(2.2)}]}>About Us</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={()=>this.navigateFromSideMenu('MediaGallery')} style={{flexDirection:'row',width:responsiveWidth(70),marginTop:responsiveHeight(1)}}>
-                            <Image source={menuMediaGalleryImage} style={{marginLeft:responsiveWidth(10),marginTop:responsiveHeight(1)}}/>
-                            <Text style={[Styles.learningtextView,{marginLeft:responsiveWidth(3),marginTop:responsiveHeight(1),fontSize:responsiveFontSize(2.2)}]}>Media Gallery</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={()=>this.navigateFromSideMenu('CalendarEvents')} style={{flexDirection:'row',width:responsiveWidth(70),marginTop:responsiveHeight(1)}}>
-                            <Image source={menuEventImage} style={{marginLeft:responsiveWidth(10),marginTop:responsiveHeight(1)}}/>
-                            <Text style={[Styles.learningtextView,{marginLeft:responsiveWidth(3),marginTop:responsiveHeight(1),fontSize:responsiveFontSize(2.2)}]}>Calendar</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={()=>this.navigateFromSideMenu('Blog')} style={{flexDirection:'row',width:responsiveWidth(70),marginTop:responsiveHeight(2)}}>
-                            <Image source={menuBlogImage} style={{marginLeft:responsiveWidth(10),marginTop:responsiveHeight(1)}}/>
-                            <Text style={[Styles.learningtextView,{marginLeft:responsiveWidth(3),marginTop:responsiveHeight(1),fontSize:responsiveFontSize(2.2)}]}>Blog</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={()=>this.navigateFromSideMenu('ContactUs')} style={{flexDirection:'row',width:responsiveWidth(70),marginTop:responsiveHeight(1)}}>
-                            <Image source={menuContactusImage} style={{marginLeft:responsiveWidth(10),marginTop:responsiveHeight(1)}}/>
-                            <Text style={[Styles.learningtextView,{marginLeft:responsiveWidth(3),marginTop:responsiveHeight(1),fontSize:responsiveFontSize(2.2)}]}>Contact Us</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={()=>this.navigateFromSideMenu('Faq')} style={{flexDirection:'row',width:responsiveWidth(70),marginTop:responsiveHeight(1)}}>
-                            <Image source={menuFaqImage} style={{marginLeft:responsiveWidth(10),marginTop:responsiveHeight(1)}}/>
-                            <Text style={[Styles.learningtextView,{marginLeft:responsiveWidth(3),marginTop:responsiveHeight(1),fontSize:responsiveFontSize(2.2)}]}>FAQ</Text>
-                            </TouchableOpacity>
-                          
-                            <TouchableOpacity onPress={()=>this.callLogoutService()} style={{flexDirection:'row',width:responsiveWidth(70),marginTop:responsiveHeight(1)}}>
-                            <Image source={menuLogoutImage} style={{marginLeft:responsiveWidth(10),marginTop:responsiveHeight(1)}}/>
-                            <Text style={[Styles.learningtextView,{marginLeft:responsiveWidth(3),marginTop:responsiveHeight(1),fontSize:responsiveFontSize(2.2)}]}>Logout</Text>
-                            </TouchableOpacity>
-                            </ScrollView>
-                        </ImageBackground>                    
-                      </View>  
-                      <TouchableOpacity style={{width:responsiveWidth(30),height:responsiveHeight(100)}} onPress={()=>this.setState({isSideBarVisible:false})} activeOpacity={1}>
-                      </TouchableOpacity>                    
-                    </Modal>
-        <Modal isVisible={this.state.isModalVisible} animationIn='zoomIn' animationOut='zoomOut' hideModalContentWhileAnimating={true} useNativeDriver={true} animationOutTiming={1000}>
-        <FlatList contentContainerStyle={{justifyContent:'center',alignItems:'center',marginTop:responsiveHeight(4)}} data={this.state.subData} 
-                    renderItem={({item,index}) => 
-                    <TouchableOpacity style={{width:responsiveWidth(100)}} onPress={()=>this.setState({isModalVisible:false})} activeOpacity={1}>
-                      <View style={Styles.modalContainer}>
-                        <TouchableOpacity onPress={()=>this.clickOnCategories(index,item.description)}><Image source={(index==0) && speakImage ||(index==1) && readImage || (index==2) && writeImage}/></TouchableOpacity>
-   
-    <Text style={Styles.learningtextView}>{item.section_name}</Text>
-    <Text style={Styles.learningtextView}>{item.section_name_in_other}</Text>
-    <View style={{height:responsiveHeight(5)}}></View>
-                      </View>
-                      
-                      </TouchableOpacity>      
-                            }  
-                    ItemSeparatorComponent={this.renderSeparator}  
-                />  
-       
-       
+                  <TouchableOpacity onPress={() => this.navigateFromSideMenu('Subscription')} style={{ flexDirection: 'row', width: responsiveWidth(70), marginTop: responsiveHeight(1) }}>
+                    <Image source={menuSubscriptionImage} style={{ marginLeft: responsiveWidth(10), marginTop: responsiveHeight(1) }} />
+                    <Text style={[Styles.learningtextView, { marginLeft: responsiveWidth(3), marginTop: responsiveHeight(1), fontSize: responsiveFontSize(2.2) }]}>Subscribe</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => this.navigateFromSideMenu('AboutUs')} style={{ flexDirection: 'row', width: responsiveWidth(70), marginTop: responsiveHeight(1) }}>
+                    <Image source={menuAboutUsImage} style={{ marginLeft: responsiveWidth(10), marginTop: responsiveHeight(1) }} />
+                    <Text style={[Styles.learningtextView, { marginLeft: responsiveWidth(3), marginTop: responsiveHeight(1), fontSize: responsiveFontSize(2.2) }]}>About Us</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => this.navigateFromSideMenu('MediaGallery')} style={{ flexDirection: 'row', width: responsiveWidth(70), marginTop: responsiveHeight(1) }}>
+                    <Image source={menuMediaGalleryImage} style={{ marginLeft: responsiveWidth(10), marginTop: responsiveHeight(1) }} />
+                    <Text style={[Styles.learningtextView, { marginLeft: responsiveWidth(3), marginTop: responsiveHeight(1), fontSize: responsiveFontSize(2.2) }]}>Media Gallery</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => this.navigateFromSideMenu('CalendarEvents')} style={{ flexDirection: 'row', width: responsiveWidth(70), marginTop: responsiveHeight(1) }}>
+                    <Image source={menuEventImage} style={{ marginLeft: responsiveWidth(10), marginTop: responsiveHeight(1) }} />
+                    <Text style={[Styles.learningtextView, { marginLeft: responsiveWidth(3), marginTop: responsiveHeight(1), fontSize: responsiveFontSize(2.2) }]}>Calendar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => this.navigateFromSideMenu('Blog')} style={{ flexDirection: 'row', width: responsiveWidth(70), marginTop: responsiveHeight(2) }}>
+                    <Image source={menuBlogImage} style={{ marginLeft: responsiveWidth(10), marginTop: responsiveHeight(1) }} />
+                    <Text style={[Styles.learningtextView, { marginLeft: responsiveWidth(3), marginTop: responsiveHeight(1), fontSize: responsiveFontSize(2.2) }]}>Blog</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => this.navigateFromSideMenu('ContactUs')} style={{ flexDirection: 'row', width: responsiveWidth(70), marginTop: responsiveHeight(1) }}>
+                    <Image source={menuContactusImage} style={{ marginLeft: responsiveWidth(10), marginTop: responsiveHeight(1) }} />
+                    <Text style={[Styles.learningtextView, { marginLeft: responsiveWidth(3), marginTop: responsiveHeight(1), fontSize: responsiveFontSize(2.2) }]}>Contact Us</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => this.navigateFromSideMenu('Faq')} style={{ flexDirection: 'row', width: responsiveWidth(70), marginTop: responsiveHeight(1) }}>
+                    <Image source={menuFaqImage} style={{ marginLeft: responsiveWidth(10), marginTop: responsiveHeight(1) }} />
+                    <Text style={[Styles.learningtextView, { marginLeft: responsiveWidth(3), marginTop: responsiveHeight(1), fontSize: responsiveFontSize(2.2) }]}>FAQ</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => this.callLogoutService()} style={{ flexDirection: 'row', width: responsiveWidth(70), marginTop: responsiveHeight(1) }}>
+                    <Image source={menuLogoutImage} style={{ marginLeft: responsiveWidth(10), marginTop: responsiveHeight(1) }} />
+                    <Text style={[Styles.learningtextView, { marginLeft: responsiveWidth(3), marginTop: responsiveHeight(1), fontSize: responsiveFontSize(2.2) }]}>Logout</Text>
+                  </TouchableOpacity>
+                </ScrollView>
+              </ImageBackground>
+            </View>
+            <TouchableOpacity style={{ width: responsiveWidth(30), height: responsiveHeight(100) }} onPress={() => this.setState({ isSideBarVisible: false })} activeOpacity={1}>
+            </TouchableOpacity>
+          </Modal>
+          <Modal isVisible={this.state.isModalVisible} animationIn='zoomIn' animationOut='zoomOut' hideModalContentWhileAnimating={true} useNativeDriver={true} animationOutTiming={1000}>
+            <FlatList contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', marginTop: responsiveHeight(4) }} data={this.state.subData}
+              renderItem={({ item, index }) =>
+                <TouchableOpacity style={{ width: responsiveWidth(100) }} onPress={() => this.setState({ isModalVisible: false })} activeOpacity={1}>
+                  <View style={Styles.modalContainer}>
+                    <TouchableOpacity onPress={() => this.clickOnCategories(index, item.description)}><Image source={(index == 0) && speakImage || (index == 1) && readImage || (index == 2) && writeImage} /></TouchableOpacity>
+                    <Text style={Styles.learningtextView}>{item.section_name}</Text>
+                    <Text style={Styles.learningtextView}>{item.section_name_in_other}</Text>
+                    <View style={{ height: responsiveHeight(5) }}></View>
+                  </View>
+                </TouchableOpacity>
+              }
+              ItemSeparatorComponent={this.renderSeparator}
+            />
+      </Modal>
+          <Modal isVisible={this.state.isIgboVisible} animationIn='zoomIn' animationOut='zoomOut' hideModalContentWhileAnimating={true} useNativeDriver={true} animationOutTiming={1000}>
+            <TouchableOpacity style={{ width: responsiveWidth(90), height: responsiveHeight(100), justifyContent: 'center', alignItems: 'center' }} onPress={() => this.setState({ isIgboVisible: false })} activeOpacity={1}>
+              <ScrollView>
+                <FlatList contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', width: responsiveWidth(100) }} data={igbo_module_list}
+                  numColumns={2}
+                  renderItem={({ item, index }) =>
+                    <View style={{ justifyContent: 'center', alignItems: 'center', marginRight: responsiveWidth(7) }}>
+                      <ImageBackground source={imageArray[index].image} style={{ width: responsiveWidth(40), height: responsiveHeight(20), justifyContent: 'center', alignItems: 'center', marginTop: responsiveHeight(2) }} imageStyle={{ resizeMode: 'center' }}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('LessonDetails', { 'type': 'igbo', 'lesson': item.lesson_name, 'lessonId': item.lesson_id, 'description': this.state.description }) && this.setState({ isIgboVisible: false })} style={{ justifyContent: 'center', alignItems: 'center', height: responsiveHeight(10) }}><Text style={{ textAlign: 'center', color: color.white, fontWeight: 'bold', width: responsiveWidth(30) }}>{item.lesson_name}</Text></TouchableOpacity>
+                      </ImageBackground>
+
+                    </View>}
+                  ItemSeparatorComponent={this.renderSeparator}
+                />
+
+              </ScrollView>
+            </TouchableOpacity>
+          </Modal>
+          {(this.state.isLoading) && <Spinner
+            visible={this.state.isLoading}
+            textContent={'Loading...'}
+            textStyle={{ color: color.white }}
+          />}
+          <ImageBackground source={backgroundIg} style={Styles.imageBackground} imageStyle={{ resizeMode: 'stretch' }}>
+            <View style={Styles.bgView}>
+              <ImageBackground source={headerImage} style={{ width: '100%', height: '100%', justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row' }}><TouchableOpacity onPress={() => this.setState({ isSideBarVisible: true })} style={{ marginLeft: responsiveWidth(4) }}><Image source={menuImage}></Image></TouchableOpacity><Text style={{ fontSize: responsiveFontSize(3), marginRight: responsiveWidth(30), color: color.white, fontFamily: 'LakkiReddy' }}>Start Learning</Text></ImageBackground>
+            </View>
+            <Text style={Styles.homeText}>Virtual Language</Text>
+            <ScrollView style={Styles.purpleView}>
+              <View style={[ { flex: 1, alignSelf: 'stretch', flexDirection: 'row',  backgroundColor: 'rgba(116, 146, 28, 0.9)', borderRadius:10,minHeight: responsiveHeight(9), marginBottom: responsiveHeight(3) ,padding:responsiveWidth(4)}]}>
+              
+                <Text style={Styles.guidanceView}>Ndewo(Welcome) &  Guidance</Text>
+                <TouchableOpacity  style={Styles.guidanceViewButton} onPress={() => this.props.navigation.navigate('Ndewo')} >
+                     <Image source={ndemoClick}></Image>
+                </TouchableOpacity>
+               
+             
+              </View>
+              <View style={[{ backgroundColor: 'rgba(116, 146, 28, 0.9)',borderRadius:10, minHeight: responsiveHeight(4), marginBottom: responsiveHeight(3),padding:responsiveWidth(4) }]}>
+                <View style={{ flex: 1, alignSelf: 'stretch', flexDirection: 'row' }}>
+                <Text style={Styles.guidanceView}>Nke na-Ewu (What's New)!</Text>
         
-                    </Modal> 
-                    <Modal  isVisible={this.state.isIgboVisible} animationIn='zoomIn' animationOut='zoomOut'  hideModalContentWhileAnimating={true} useNativeDriver={true} animationOutTiming={1000}>
-        <TouchableOpacity style={{width:responsiveWidth(90),height:responsiveHeight(100),justifyContent:'center',alignItems:'center'}} onPress={()=>this.setState({isIgboVisible:false})} activeOpacity={1}>
-<ScrollView>
-        <FlatList contentContainerStyle={{justifyContent:'center',alignItems:'center',width:responsiveWidth(100)}} data={igbo_module_list}  
-                    numColumns={2}
-                    renderItem={({item,index}) =>                    
-                    <View style={{justifyContent:'center',alignItems:'center',marginRight:responsiveWidth(7)}}> 
-                     <ImageBackground source={imageArray[index].image} style={{width:responsiveWidth(40),height:responsiveHeight(20),justifyContent:'center',alignItems:'center',marginTop:responsiveHeight(2)}} imageStyle={{resizeMode:'center'}}>
-                        <TouchableOpacity onPress={()=>this.props.navigation.navigate('LessonDetails',{'type':'igbo','lesson':item.lesson_name,'lessonId':item.lesson_id,'description':this.state.description}) && this.setState({isIgboVisible:false})} style={{justifyContent:'center',alignItems:'center',height:responsiveHeight(10)}}><Text style={{textAlign:'center',color:color.white,fontWeight:'bold',width:responsiveWidth(30)}}>{item.lesson_name}</Text></TouchableOpacity>  
-                     </ImageBackground>
-                 
-                    </View>} 
-                    ItemSeparatorComponent={this.renderSeparator}  
-                />  
-                     
-                     </ScrollView>
-                      </TouchableOpacity>
-                    </Modal> 
-                    {(this.state.isLoading) && <Spinner
-          visible={this.state.isLoading}
-          textContent={'Loading...'}
-          textStyle={{color: color.white}}
-                    />   } 
-        <ImageBackground source={backgroundIg} style={Styles.imageBackground} imageStyle={{resizeMode:'stretch'}}>        
-        <View style={Styles.bgView}>
-          <ImageBackground source={headerImage} style={{width:'100%',height:'100%',justifyContent:'space-between',alignItems:'center',flexDirection:'row'}}><TouchableOpacity onPress={()=>this.setState({isSideBarVisible:true})} style={{marginLeft:responsiveWidth(4)}}><Image source={menuImage}></Image></TouchableOpacity><Text style={{fontSize:responsiveFontSize(3),marginRight:responsiveWidth(30),color:color.white,fontFamily:'LakkiReddy'}}>Start Learning</Text></ImageBackground>          
-        </View>
-        <Text style={Styles.homeText}>Virtual Language</Text>
-        <View style={Styles.purpleView}>
-         <FlatList  data={data} 
-                    renderItem={({item,index}) => 
-                    <View style={[Styles.learningView,{backgroundColor:(index==0)?color.blue:null||(index==1)?color.orange:null||(index==2)?color.yellow:null||(index==3)?color.homeGreen:null}]}> 
-                    <View style={[Styles.learningView1]}>                      
-                        <Text style={Styles.learningCategoryView}>{item.name_in_english}</Text>
-                        <Text style={Styles.learningCategoryTextView}>{item.description}</Text>
-                        <View style={{flexDirection:'row', marginBottom:responsiveHeight(1),}}>
-                        <TouchableOpacity onPress={()=>this.props.navigation.navigate('LessonListing',{'type':'lesson','sectionId':index+1})} style={[Styles.modalButton]}>                         
-                        <Text style={[Styles.modalSendText,{color:(index==0)?color.blue:null||(index==1)?color.orange:null||(index==2)?color.yellow:null||(index==3)?color.homeGreen:null}]}>Lessons</Text>
+                <TouchableOpacity style={Styles.guidanceViewButton} onPress={() => this.props.navigation.navigate('WhatsnewList')} >
+                <Image source={whatnew}></Image>
+                </TouchableOpacity>
+                </View>
+                <View style={{ marginBottom: responsiveHeight(3), marginTop:responsiveHeight(1),marginLeft:responsiveWidth(1)  ,  width:responsiveWidth(90) }}>
+                  <FlatList data={this.state.bannerList}
+                    renderItem={({ item, index }) =>
+                      <Text style={{ fontSize:responsiveFontSize(1.5), marginTop:responsiveHeight(1),color:'white',  marginRight:responsiveWidth(1),marginLeft:responsiveWidth(2) ,flexShrink: 1 }}>{`\u2022 ${bannerResult[item]}`}</Text>
+                    }>
+                  </FlatList>
+                </View>
+              </View>
+
+              <View style={[{marginBottom:responsiveHeight(2), marginTop:responsiveHeight(3)} ]}>
+                <TouchableOpacity style={[Styles.calendarButton,{ backgroundColor: color.blue}]} onPress={() => this.props.navigation.navigate('CalendarEvents', { 'type': 'events' })} >
+                  <Text style={[Styles.calendarTextButton]}>Virtual Learning Calendar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[Styles.calendarButton,{  backgroundColor: color.lightYellow}]} onPress={() => this.props.navigation.navigate('IgborizingPlan', { 'type': 'IgborizingPlan' })}>
+                  <Text style={[Styles.calendarTextButton,{color:color.black}]}>Starter Igborizing Plan </Text>
+                </TouchableOpacity>
+                <FlatList data={this.state.eventList}
+                  renderItem={({ item, index }) =>
+                    <TouchableOpacity style={[Styles.calendarButton, { backgroundColor: (index == 0) ?  color.orange : null || (index == 1) ? color.yellow : null || (index == 2) ? color.purple : null || (index == 3) ? color.homeGreen : null }]} onPress={() => this.props.navigation.navigate('CalendarEvents', { 'type': item.name })} >
+                      <Text style={[Styles.calendarTextButton  ]}>{item.name} </Text>
+                    </TouchableOpacity>
+                  }>
+                </FlatList>
+              </View>
+              <FlatList data={data}
+                renderItem={({ item, index }) =>
+                  <View style={[Styles.learningView, { backgroundColor: (index == 0) ? color.blue : null || (index == 1) ? color.orange : null || (index == 2) ? color.yellow : null || (index == 3) ? color.homeGreen : null }]}>
+                    <View style={[Styles.learningView1]}>
+                      <Text style={Styles.learningCategoryView}>{item.name_in_english}</Text>
+                      <Text style={Styles.learningCategoryTextView}>{item.description}</Text>
+                      <View style={{ flexDirection: 'row', marginBottom: responsiveHeight(1), }}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('LessonListing', { 'type': 'lesson', 'sectionId': index + 1 })} style={[Styles.modalButton]}>
+                          <Text style={[Styles.modalSendText, { color: (index == 0) ? color.blue : null || (index == 1) ? color.orange : null || (index == 2) ? color.yellow : null || (index == 3) ? color.homeGreen : null }]}>Lessons</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={()=>this.setState({isModalVisible:true,standId:index+1,subData:item.sections})} style={[Styles.modalButton]}>                         
-                        <Text style={[Styles.modalSendText,{color:(index==0)?color.blue:null||(index==1)?color.orange:null||(index==2)?color.yellow:null||(index==3)?color.homeGreen:null}]}>Activity</Text>
+                        <TouchableOpacity onPress={() => this.setState({ isModalVisible: true, standId: index + 1, subData: item.sections })} style={[Styles.modalButton]}>
+                          <Text style={[Styles.modalSendText, { color: (index == 0) ? color.blue : null || (index == 1) ? color.orange : null || (index == 2) ? color.yellow : null || (index == 3) ? color.homeGreen : null }]}>Activity</Text>
                         </TouchableOpacity>
-                        </View>
-                        {(index==3)&& <View style={{flexDirection:'row', marginBottom:responsiveHeight(1),}}>
-                        <TouchableOpacity onPress={()=>this.props.navigation.navigate('LessonListing',{'type':'cat','sectionId':3})} style={[Styles.modalButton]}>                         
-                        <Text style={[Styles.modalSendText,{color:(index==0)?color.blue:null||(index==1)?color.orange:null||(index==2)?color.yellow:null||(index==3)?color.homeGreen:null}]}>Learning Resources</Text>
+                      </View>
+                      {(index == 3) && <View style={{ flexDirection: 'row', marginBottom: responsiveHeight(1), }}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('LessonListing', { 'type': 'cat', 'sectionId': 3 })} style={[Styles.modalButton]}>
+                          <Text style={[Styles.modalSendText, { color: (index == 0) ? color.blue : null || (index == 1) ? color.orange : null || (index == 2) ? color.yellow : null || (index == 3) ? color.homeGreen : null }]}>Learning Resources</Text>
                         </TouchableOpacity>
-                        
-                        </View> 
-                        
-                        }  
-                        {(index==3)&& <View style={{flexDirection:'row', marginBottom:responsiveHeight(1),}}>
-                        <TouchableOpacity onPress={()=>this.props.navigation.navigate('LessonListing',{'type':'cat','sectionId':4})} style={[Styles.modalButton]}>                         
-                        <Text style={[Styles.modalSendText,{color:(index==0)?color.blue:null||(index==1)?color.orange:null||(index==2)?color.yellow:null||(index==3)?color.homeGreen:null}]}>Social Spot</Text>
+                      </View>
+                      }
+                      {(index == 3) && <View style={{ flexDirection: 'row', marginBottom: responsiveHeight(1), }}>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('LessonListing', { 'type': 'cat', 'sectionId': 4 })} style={[Styles.modalButton]}>
+                          <Text style={[Styles.modalSendText, { color: (index == 0) ? color.blue : null || (index == 1) ? color.orange : null || (index == 2) ? color.yellow : null || (index == 3) ? color.homeGreen : null }]}>Social Spot</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={()=>this.setState({isIgboVisible:true})} style={[Styles.modalButton]}>                         
-                        <Text style={[Styles.modalSendText,{color:(index==0)?color.blue:null||(index==1)?color.orange:null||(index==2)?color.yellow:null||(index==3)?color.homeGreen:null}]}>Seasonal</Text>
+                        <TouchableOpacity onPress={() => this.setState({ isIgboVisible: true })} style={[Styles.modalButton]}>
+                          <Text style={[Styles.modalSendText, { color: (index == 0) ? color.blue : null || (index == 1) ? color.orange : null || (index == 2) ? color.yellow : null || (index == 3) ? color.homeGreen : null }]}>Seasonal</Text>
                         </TouchableOpacity>
-                        
-                        </View> 
-                        
-                        }          
+
+                      </View>
+                      }
                     </View>
-                    
-                    <View style={[Styles.learningImageView]}> 
-                    <ImageBackground source={{uri:item.image}} style={{width:'100%',height:'100%',flex:1,justifyContent:'center',alignItems:'flex-start'}} imageStyle={{resizeMode:'stretch'}}>
-                    </ImageBackground>
-                   </View>
-                   </View>        
-                            }  
-                    ItemSeparatorComponent={this.renderSeparator}  
-                />  
+                    <View style={[Styles.learningImageView]}>
+                      <ImageBackground source={{ uri: item.image }} style={{ width: '100%', height: '100%', flex: 1, justifyContent: 'center', alignItems: 'flex-start' }} imageStyle={{ resizeMode: 'stretch' }}>
+                      </ImageBackground>
+                    </View>
+                  </View>
+                }
+                ItemSeparatorComponent={this.renderSeparator}
+              />
+            </ScrollView>
+          </ImageBackground>
         </View>
-        </ImageBackground>
-       
-      
-        </View>
-       
       </View>
     );
   }
@@ -440,6 +470,10 @@ const mapStateToProps = state => ({
   userLoading : state.homeApiResponseDataConfig.userLoading,
   userMessage : state.homeApiResponseDataConfig.userMessage,
   userResult : state.homeApiResponseDataConfig.userMessage,
+  bannerResult : state.homeApiResponseDataConfig.bannerResult,
+  bannerMessage: state.homeApiResponseDataConfig.bannerMessage,
+  eventListResult:state.homeApiResponseDataConfig.eventListResult
+  //https://biawazo.com/api/get-banner
  
 
 

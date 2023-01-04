@@ -1,7 +1,7 @@
 export default {
     // BASEURL: 'https://runmobileapps.com/biawazo_backend/api/',
-    BASEURL: 'https://www.biawazo.com/api/',
-    CALENDARURL:'https://biawazo.com/',
+    BASEURL: 'https://biawazo.com/api/',
+    STAGINGURL:'https://biawazo.com/api/',
     SIGNIN:'do-login',
     SIGNUP:'do-signup',
     SIGNUP_FREE:'do-free-signup',
@@ -31,6 +31,10 @@ export default {
     CHANGE_PASSWORD:'update-user-password',
     FAQ_LIST:'faq-list',
     Events:'loadEvents',
+    STARTER_SCHEDULES:'starter-schedules',
+    WHATSNEW_LIST:'whatsnew-list',
+    EVENTS_LIST:'events-list',
+    GET_BANNER:'get-banner',
     IGBO_LESSON_DETAILS:'get-lesson-details-igbo'
 };
 export const API_SUCCESS = 'API_SUCCESS'
@@ -56,5 +60,8 @@ export const API_SUBSCRIPTION_STATUS = 'API_SUBSCRIPTION_STATUS'
 export const API_PROMO_CODE = 'API_PROMO_CODE'
 export const API_BUY_SUBSCRIPTION = 'API_BUY_SUBSCRIPTION'
 export const API_USER_DETAILS = 'API_USER_DETAILS'
+export const API_VL_BANNER = 'API_VL_BANNER'
 export const API_FAQ_LIST = 'API_FAQ_LIST'
 export const API_EVENT_LIST = 'API_EVENT_LIST'
+export const API_WHATSNEW_LIST = 'API_WHATSNEW_LIST'
+export const API_STARTER_SCHEDULES='API_STARTER_SCHEDULES'

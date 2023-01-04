@@ -16,7 +16,8 @@ import Utils from '../../Utils/utils';
  
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProgressBar from 'react-native-image-progress';
-import Orientation from 'react-native-orientation';
+import Orientation from 'react-native-orientation'; 
+
 
 const previewImage = require('../../../assets/PreviewImage.png');
 // const backgroundBlackIg = require('../../assets/bg2.png');
@@ -240,7 +241,9 @@ ClickReadMore=(read)=>{
                  {(item.is_new===1)?<View style={{width:responsiveWidth(15),height:responsiveHeight(3),marginLeft:responsiveWidth(1),justifyContent:'center',alignItems:'center',position:'absolute',marginTop:responsiveHeight(2),backgroundColor:color.blue,transform : [{rotate : '-30deg'}],}}><Text style={{color:color.white}}>NEW</Text></View>:null}
                  </View>
                     <Text style={{fontSize:responsiveFontSize(2),color:color.green,fontFamily:'LakkiReddy',marginTop:responsiveHeight(2),marginLeft:responsiveWidth(2)}}>{item.study_title}</Text>
+                    <ShowMore>
                     <Text style={[{marginLeft:responsiveWidth(1),fontSize:responsiveFontSize(1.8),color:color.darkGray,marginLeft:responsiveWidth(2),fontFamily:'OpenSans',width:responsiveWidth(30)}]}>{item.study_description}</Text>
+                    </ShowMore>
                    </TouchableOpacity>
                    </View>
                             }  

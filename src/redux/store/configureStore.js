@@ -17,6 +17,7 @@ import SubscriptionListingReducer from '../reducers/SubscriptionListingReducer';
 import StudyMaterials from '../reducers/studyMaterialsReducer'
 import FAQ from '../reducers/faqReducer';
 import eventReducer from '../reducers/eventReducer';
+import WhatsnewListReducer from '../reducers/WhatsnewListReducer';
 const rootReducer = combineReducers(
 { signupReducerConfig : signupReducer ,
 loginApiResponseDataConfig : loginApiReducer, 
@@ -33,7 +34,8 @@ forgotPasswordApiResponseDataConfig:forgotPasswordReducer,
 SubscriptionListingApiResponseDataConfig:SubscriptionListingReducer,
 studyMaterialsApiResponseDataConfig:StudyMaterials,
 faqApiResponseDataConfig:FAQ,
-eventReducerApiResponseDataConfig:eventReducer
+eventReducerApiResponseDataConfig:eventReducer,
+whatsnewListApiResponseDataConfig:WhatsnewListReducer
 }
 );
 const configureStore = () => {

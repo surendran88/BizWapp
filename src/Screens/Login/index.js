@@ -209,7 +209,7 @@ login = () =>{
     'device_type':'1',
     'device_unique_code':'abcd123458'
   };
-  axios.post(Constant.BASEURL + Constant.SIGNIN, params,Utils.postHeader()).
+  axios.post(Constant.STAGINGURL + Constant.SIGNIN, params,Utils.postHeader()).
       then((res) => {
           this.setState({ isLoading: false });
           let data = res.data;

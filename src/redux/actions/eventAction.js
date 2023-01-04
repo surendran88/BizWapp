@@ -29,7 +29,7 @@ export const fetchEventFailure = error => ({
   //USING AXIOS
   export function getEventData(param){
 
-    const request = axios.get(Constant.CALENDARURL+Constant.Events,param);
+    const request = axios.get(Constant.BASEURL+Constant.Events,param);
     return dispatch => {
       dispatch(fetchEventBegin());
       return request.then((data) => {
@@ -45,4 +45,21 @@ export const fetchEventFailure = error => ({
   }
     
   
+    //USING AXIOS
+    export function getNDewoData(param){
+
+      const request = axios.post(Constant.BASEURL+Constant.STARTER_SCHEDULES,param);
+      return dispatch => {
+        dispatch(fetchEventBegin());
+        return request.then((data) => {
+          // Handle Success response here
+           console.log("axios Call ",data.data);
+          dispatch(fetchData(data.data));
+          return data.data;
+        }).catch((error) => {
+          // Handle error here, you can show error alert here or within reducer
+            dispatch(fetchEventFailure(error))
+        })
+      }
+    }
   

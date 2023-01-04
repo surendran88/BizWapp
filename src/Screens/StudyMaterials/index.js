@@ -65,9 +65,7 @@ const DATA = [{'key':'test'},{'key':'test1'},{'key':'test2'},{'key':'test3'},{'k
   };  
   UNSAFE_componentWillReceiveProps(){
     let {studydata,studyloading,studymessage,studyresult}=this.props
-   
- console.log(studydata)
-    
+ 
       this.setState({isloading:studyloading})
    
   }

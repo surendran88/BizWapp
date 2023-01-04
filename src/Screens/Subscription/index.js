@@ -214,7 +214,7 @@ UNSAFE_componentWillReceiveProps(){
  
   
   let {signUpDetail,loading,message,result,subscriptionDetails,promoRes,promomessage,promoresult,subsmessage,subresult} = this.props;
-  console.log(signUpDetail,loading,message,result,subscriptionDetails,promoRes,promomessage,promoresult,subsmessage,subresult)
+  //console.log(signUpDetail,loading,message,result,subscriptionDetails,promoRes,promomessage,promoresult,subsmessage,subresult)
   if(promoresult==true){
     alert(promomessage)
     // this.setState({isSubscribe:false})
